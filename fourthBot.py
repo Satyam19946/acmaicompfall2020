@@ -32,8 +32,8 @@ def nearestPosEmpTileDir(unit, player, opponent, agent):
         canGoEast = True
 
     if unit.pos.y + 1 < agent.mapHeight:
-        north = Position(unit.pos.x,unit.pos.y+1)
-        northTile = agent.map.get_tile_by_pos(north)
+        south = Position(unit.pos.x,unit.pos.y+1)
+        southTile = agent.map.get_tile_by_pos(south)
         canGoNorth = True
 
     if unit.pos.x - 1 >= 0:
@@ -42,8 +42,8 @@ def nearestPosEmpTileDir(unit, player, opponent, agent):
         canGoWest = True
 
     if unit.pos.y - 1 >= 0:
-        south = Position(unit.pos.x,unit.pos.y-1)
-        southTile = agent.map.get_tile_by_pos(south)
+        north = Position(unit.pos.x,unit.pos.y-1)
+        northTile = agent.map.get_tile_by_pos(north)
         canGoSouth = True
 
     for oppUnit in opponent.units:
@@ -84,17 +84,17 @@ def nearestPosEmpTileDir(unit, player, opponent, agent):
         return DIRECTIONS.NORTH
     
     if canGoEast and eastTile.energium >= 0:
-        return DIRECTIONS.NORTH
+        return DIRECTIONS.EAST
     
     if canGoWest and westTile.energium >= 0:
-        return DIRECTIONS.NORTH
+        return DIRECTIONS.WEST
     
     if canGoSouth and southTile.energium >= 0:
-        return DIRECTIONS.NORTH
+        return DIRECTIONS.SOUTH
     
 
 def collisionHappens(unit, posReached, player, opponent):
-    print("This was called ", file=sys.stderr)
+    #print("This was called ", file=sys.stderr)
     for unitopp in opponent.units:
         if unitopp.pos.equals(posReached):
             return True
@@ -185,7 +185,7 @@ while True:
                 maxBaseDist = dis
 
     if (not baseToSpawnOn) and ((player.energium - opponent.energium >= 100) or (len(opponent.units) > len(player.units) and player.energium >= 50) 
-                            or (player.energium == opponent.energium)):
+                            or (player.energium == opponent.energium) or (opponent.energium >= 50)):
         baseToSpawnOn = player.bases[base_to_spawn % len(player.bases)]
         base_to_spawn += 1
 
@@ -221,10 +221,9 @@ while True:
                 i += 1
                 if i < len(energium_here):
                     reachPoint = energium_here[i]
+                    continue
                 else:
                     break
-                continue
-
             distance = start.distance_to(reachPoint[3].pos)    
             if distance < minDistanceFromMe:
                 unitToMove = unit
@@ -232,7 +231,7 @@ while True:
         for unit in opponent.units:
             distance = unit.pos.distance_to(reachPoint[3].pos)
             if distance < minDistanceFromOpp:
-                minDistancFromMe = distance
+                minDistancFromOpp = distance
         if unitToMove and minDistanceFromOpp >= minDistanceFromMe:
             direction_to_take = unitToMove.pos.direction_to(reachPoint[3].pos)
             if direction_to_take:
@@ -243,11 +242,17 @@ while True:
                     if direction_to_take:
                         commands.append(unitToMove.move(direction_to_take))
                         copyMyUnits.remove(unitToMove)
-                elif negativeTile(position_reached):
-                    direction_to_take = nearestPosEmpTileDir(unit,player,opponent,agent)
-                    if direction_to_take:
-                        commands.append(unitToMove.move(direction_to_take))
-                        copyMyUnits.remove(unitToMove)
+                # elif negativeTile(position_reached):
+                #     direction_to_take2 = nearestPosEmpTileDir(unit,player,opponent,agent)
+                #     # MAke sure its not in a loop
+                #     if direction_to_take2:
+                #         posnew = unitToMove.pos.translate(direction_to_take2,1)
+                #         newdir = posnew.direction_to(reachPoint[3].pos)
+                #         if posnew.translate(newdir,1).equals(position_reached):
+                #             commands.append(unitToMove.move(direction_to_take))
+                #         else:
+                #             commands.append(unitToMove.move(direction_to_take2))
+                #         copyMyUnits.remove(unitToMove)
                 else:
                     commands.append(unitToMove.move(direction_to_take))
                     copyMyUnits.remove(unitToMove)

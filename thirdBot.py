@@ -233,11 +233,6 @@ while True:
                     if direction_to_take:
                         commands.append(unitToMove.move(direction_to_take))
                         copyMyUnits.remove(unitToMove)
-                elif negativeTile(position_reached):
-                    direction_to_take = nearestPosEmpTileDir(unit,player,opponent,agent)
-                    if direction_to_take:
-                        commands.append(unitToMove.move(direction_to_take))
-                        copyMyUnits.remove(unitToMove)
                 else:
                     commands.append(unitToMove.move(direction_to_take))
                     copyMyUnits.remove(unitToMove)
