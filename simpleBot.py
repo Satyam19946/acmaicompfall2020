@@ -11,6 +11,7 @@ agent = Agent()
 # initialize agent
 agent.initialize()
 
+# A simple BFS on every unit to find the max empty spot.
 # Once initialized, we enter an infinite loop
 while True:
 
